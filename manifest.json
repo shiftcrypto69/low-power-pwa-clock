@@ -1,0 +1,15 @@
+{
+  "name": "Low Power Clock",
+  "short_name": "UltraClock",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192/000000/00FF00?text=Clock",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
