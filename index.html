@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="manifest.json">
+    <title>Low Power Clock</title>
+    <style>
+        body { 
+            background-color: black; 
+            color: #00FF00; /* Hijau retro, senang dibaca dengan brightness rendah */
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #clock { font-size: 20vw; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="clock">00:00:00 AM</div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            let h = now.getHours();
+            let m = now.getMinutes();
+            let s = now.getSeconds();
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            
+            h = h % 12;
+            h = h ? h : 12; 
+            m = m < 10 ? '0' + m : m;
+            s = s < 10 ? '0' + s : s;
+
+            document.getElementById('clock').textContent = `${h}:${m}:${s} ${ampm}`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
