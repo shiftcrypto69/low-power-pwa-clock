@@ -5,44 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
-    <title>Low Power Clock</title>
+    <title>Minimal Grey Clock</title>
     <style>
+        /* Background hitam pekat untuk jimat pixel skrin */
         body { 
-            background-color: black; 
-            color: #00FF00; /* Hijau retro, senang dibaca dengan brightness rendah */
+            background-color: #000; 
+            margin: 0; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             height: 100vh; 
-            margin: 0; 
-            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        #clock { font-size: 20vw; font-weight: bold; }
+
+        #clock { 
+            color: #888; /* Warna Grey */
+            font-size: 18vw; 
+            font-weight: 200;
+            letter-spacing: -2px;
+            /* Kesan Glow yang halus */
+            text-shadow: 0 0 20px rgba(136, 136, 136, 0.4);
+            transition: all 0.5s ease;
+        }
+
+        /* AM/PM dibuat lebih kecil untuk minimalisme */
+        span {
+            font-size: 5vw;
+            margin-left: 10px;
+            opacity: 0.6;
+        }
     </style>
 </head>
 <body>
-    <div id="clock">00:00:00 AM</div>
+
+    <div id="clock">00:00<span>AM</span></div>
 
     <script>
         function updateClock() {
             const now = new Date();
             let h = now.getHours();
             let m = now.getMinutes();
-            let s = now.getSeconds();
             let ampm = h >= 12 ? 'PM' : 'AM';
             
             h = h % 12;
             h = h ? h : 12; 
             m = m < 10 ? '0' + m : m;
-            s = s < 10 ? '0' + s : s;
 
-            document.getElementById('clock').textContent = `${h}:${m}:${s} ${ampm}`;
+            document.getElementById('clock').innerHTML = `${h}:${m}<span>${ampm}</span>`;
+            
+            // Logik untuk kemaskini tepat pada permulaan minit baru
+            const delay = (60 - now.getSeconds()) * 1000;
+            setTimeout(updateClock, delay);
         }
 
-        setInterval(updateClock, 1000);
         updateClock();
 
-        // Register Service Worker
+        // Pendaftaran Service Worker (Offline)
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
