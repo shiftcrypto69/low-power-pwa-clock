@@ -2,12 +2,11 @@
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Minimal Grey Clock</title>
     <style>
-        /* Sempurna untuk OLED - Pixel hitam dipadam terus */
         body { 
             background-color: #000; 
             margin: 0; 
@@ -16,28 +15,27 @@
             align-items: center; 
             height: 100vh; 
             overflow: hidden;
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            cursor: pointer;
         }
 
         #clock { 
-            color: #555; /* Grey yang lebih gelap & minimal */
-            font-size: 15vw; 
-            font-weight: 100; /* Font nipis */
-            letter-spacing: -5px;
-            /* Glow yang lembut */
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-            text-align: center;
+            color: #444; /* Grey lebih malap untuk jimat kuasa */
+            font-size: 22vw; 
+            font-weight: 100;
+            letter-spacing: -2px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+            transition: transform 1s ease-in-out; /* Untuk pergerakan halus */
         }
 
         span {
-            font-size: 4vw;
-            margin-left: 15px;
-            font-weight: 300;
-            color: #333; /* AM/PM lebih malap */
+            font-size: 6vw;
+            margin-left: 10px;
+            color: #222; /* AM/PM sangat malap */
         }
     </style>
 </head>
-<body>
+<body onclick="toggleFullScreen()">
 
     <div id="clock">00:00<span>--</span></div>
 
@@ -51,11 +49,26 @@
             h = h % 12 || 12; 
             m = m < 10 ? '0' + m : m;
 
-            document.getElementById('clock').innerHTML = `${h}:${m}<span>${ampm}</span>`;
+            const clockEl = document.getElementById('clock');
+            clockEl.innerHTML = `${h}:${m}<span>${ampm}</span>`;
+
+            // Anti Burn-in: Gerakkan jam sikit setiap minit (random position)
+            const moveX = Math.floor(Math.random() * 10) - 5;
+            const moveY = Math.floor(Math.random() * 10) - 5;
+            clockEl.style.transform = `translate(${moveX}px, ${moveY}px)`;
             
-            // Update setiap 1 minit untuk jimat bateri gila-gila
             const delay = (60 - now.getSeconds()) * 1000;
             setTimeout(updateClock, delay);
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
         }
 
         updateClock();
