@@ -1,9 +1,14 @@
-const cacheName = 'grey-glow-v2'; // Nama versi baru
-const assets = ['./', './index.html', './manifest.json'];
+const cacheName = 'grey-glow-v3'; // Naikkan versi ke v3
+const assets = [
+  './', 
+  './index.html', 
+  './manifest.json', 
+  './logo.png' // WAJIB tambah ini supaya logo boleh keluar
+];
 
 // Pasang Service Worker dan simpan cache
 self.addEventListener('install', (e) => {
-  self.skipWaiting(); // Paksa SW baru aktif serta-merta
+  self.skipWaiting(); 
   e.waitUntil(
     caches.open(cacheName).then((cache) => cache.addAll(assets))
   );
