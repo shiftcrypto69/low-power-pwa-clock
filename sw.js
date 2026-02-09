@@ -1,33 +1,42 @@
-const cacheName = 'grey-glow-v3'; // Naikkan versi ke v3
+const cacheName = 'grey-glow-v4'; // Versi v4 untuk kemaskini logo & layout
 const assets = [
-  './', 
-  './index.html', 
-  './manifest.json', 
-  './logo.png' // WAJIB tambah ini supaya logo boleh keluar
+  './',
+  './index.html',
+  './manifest.json',
+  './logo.png' // Memastikan logo disimpan untuk kegunaan offline
 ];
 
 // Pasang Service Worker dan simpan cache
 self.addEventListener('install', (e) => {
-  self.skipWaiting(); 
+  self.skipWaiting(); // Paksa SW baru aktif serta-merta tanpa menunggu tab ditutup
   e.waitUntil(
-    caches.open(cacheName).then((cache) => cache.addAll(assets))
+    caches.open(cacheName).then((cache) => {
+      console.log('SW: Menambah assets ke dalam cache');
+      return cache.addAll(assets);
+    })
   );
 });
 
-// Padam cache lama secara automatik
+// Padam cache lama secara automatik (Cleanup)
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.filter((key) => key !== cacheName).map((key) => caches.delete(key))
+        keys.filter((key) => key !== cacheName).map((key) => {
+          console.log('SW: Memadam cache lama:', key);
+          return caches.delete(key);
+        })
       );
     })
   );
 });
 
-// Ambil fail dari cache, jika tiada baru guna network
+// Strategi: Cache First, then Network
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
+    caches.match(e.request).then((res) => {
+      // Pulangkan fail dari cache jika ada, jika tidak ambil dari network
+      return res || fetch(e.request);
+    })
   );
 });
