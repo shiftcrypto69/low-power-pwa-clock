@@ -7,37 +7,61 @@
     <link rel="manifest" href="manifest.json">
     <title>Minimal Grey Clock</title>
     <style>
+        /* Fokus: Zero-emissions UI & OLED Efficiency */
         body { 
             background-color: #000; 
             margin: 0; 
             display: flex; 
+            flex-direction: column; /* Susun ke bawah */
             justify-content: center; 
             align-items: center; 
             height: 100vh; 
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Container untuk logo branding */
+        .brand-container {
+            margin-bottom: 30px; /* Jarak antara logo dan jam */
+            transition: transform 1s ease-in-out; /* Ikut gerak anti-burn-in */
+        }
+
+        .brand-logo {
+            width: 60px; /* Saiz engineer minimalist */
+            height: auto;
+            opacity: 0.35; /* Malap untuk jimat bateri */
+            filter: grayscale(100%);
         }
 
         #clock { 
-            color: #444; /* Grey lebih malap untuk jimat kuasa */
-            font-size: 22vw; 
+            color: #444; 
+            font-size: 20vw; 
             font-weight: 100;
-            letter-spacing: -2px;
+            letter-spacing: -4px;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
-            transition: transform 1s ease-in-out; /* Untuk pergerakan halus */
+            transition: transform 1s ease-in-out;
+            text-align: center;
         }
 
         span {
-            font-size: 6vw;
+            font-size: 5vw;
             margin-left: 10px;
-            color: #222; /* AM/PM sangat malap */
+            color: #222; /* AM/PM malap */
+            font-weight: 300;
         }
     </style>
 </head>
 <body onclick="toggleFullScreen()">
 
-    <div id="clock">00:00<span>--</span></div>
+    <div id="main-container" style="display: flex; flex-direction: column; align-items: center;">
+        <div class="brand-container" id="brand-box">
+            <img src="logo.png" alt="Brand Logo" class="brand-logo" onerror="this.style.display='none'">
+        </div>
+
+        <div id="clock">00:00<span>--</span></div>
+    </div>
 
     <script>
         function updateClock() {
@@ -50,20 +74,23 @@
             m = m < 10 ? '0' + m : m;
 
             const clockEl = document.getElementById('clock');
+            const mainContainer = document.getElementById('main-container');
+            
             clockEl.innerHTML = `${h}:${m}<span>${ampm}</span>`;
 
-            // Anti Burn-in: Gerakkan jam sikit setiap minit (random position)
-            const moveX = Math.floor(Math.random() * 10) - 5;
-            const moveY = Math.floor(Math.random() * 10) - 5;
-            clockEl.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            // Anti Burn-in: Gerakkan seluruh container sikit setiap minit
+            const moveX = Math.floor(Math.random() * 12) - 6;
+            const moveY = Math.floor(Math.random() * 12) - 6;
+            mainContainer.style.transform = `translate(${moveX}px, ${moveY}px)`;
             
+            // Sync update pada saat ke-0 minit seterusnya
             const delay = (60 - now.getSeconds()) * 1000;
             setTimeout(updateClock, delay);
         }
 
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
+                document.documentElement.requestFullscreen().catch(err => {});
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
@@ -74,7 +101,9 @@
         updateClock();
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js');
+            });
         }
     </script>
 </body>
