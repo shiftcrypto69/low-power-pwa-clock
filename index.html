@@ -12,7 +12,6 @@
             background-color: #000; 
             margin: 0; 
             display: flex; 
-            flex-direction: column; /* Susun ke bawah */
             justify-content: center; 
             align-items: center; 
             height: 100vh; 
@@ -22,16 +21,26 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Container untuk logo branding */
+        #main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 1s ease-in-out;
+        }
+
+        /* Container untuk logo branding - Saiz diperbesarkan */
         .brand-container {
-            margin-bottom: 30px; /* Jarak antara logo dan jam */
-            transition: transform 1s ease-in-out; /* Ikut gerak anti-burn-in */
+            width: 45vw; /* Lebar logo selari dengan skala jam */
+            max-width: 400px;
+            margin-bottom: -5px; /* Rapatkan kedudukan logo dengan jam */
+            display: flex;
+            justify-content: center;
         }
 
         .brand-logo {
-            width: 60px; /* Saiz engineer minimalist */
+            width: 100%;
             height: auto;
-            opacity: 0.35; /* Malap untuk jimat bateri */
+            opacity: 0.3; /* Malap sedikit untuk jimat bateri & nampak premium */
             filter: grayscale(100%);
         }
 
@@ -41,8 +50,8 @@
             font-weight: 100;
             letter-spacing: -4px;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
-            transition: transform 1s ease-in-out;
             text-align: center;
+            line-height: 1;
         }
 
         span {
@@ -55,7 +64,7 @@
 </head>
 <body onclick="toggleFullScreen()">
 
-    <div id="main-container" style="display: flex; flex-direction: column; align-items: center;">
+    <div id="main-container">
         <div class="brand-container" id="brand-box">
             <img src="logo.png" alt="Brand Logo" class="brand-logo" onerror="this.style.display='none'">
         </div>
@@ -78,9 +87,9 @@
             
             clockEl.innerHTML = `${h}:${m}<span>${ampm}</span>`;
 
-            // Anti Burn-in: Gerakkan seluruh container sikit setiap minit
-            const moveX = Math.floor(Math.random() * 12) - 6;
-            const moveY = Math.floor(Math.random() * 12) - 6;
+            // Anti Burn-in: Gerakkan seluruh container secara rawak setiap minit
+            const moveX = Math.floor(Math.random() * 14) - 7;
+            const moveY = Math.floor(Math.random() * 14) - 7;
             mainContainer.style.transform = `translate(${moveX}px, ${moveY}px)`;
             
             // Sync update pada saat ke-0 minit seterusnya
@@ -102,7 +111,11 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js');
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    console.log('SW Registered');
+                }).catch(err => {
+                    console.log('SW Failed', err);
+                });
             });
         }
     </script>
